@@ -13,8 +13,8 @@ def create_order(
     date: str = None
 ) -> None:
     user = User.objects.get(username=username)
+    # Criamos a order em um único passo
     order = Order.objects.create(user=user)
-
     if date:
         order.created_at = date
         order.save()
