@@ -20,7 +20,10 @@ class Movie(models.Model):
 
 class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
 
     class Meta:
         ordering = ["-created_at"]
@@ -48,17 +51,18 @@ class Ticket(models.Model):
         ]
 
     def clean(self) -> None:
-        # Validate row
-        if not (1 <= self.row <= self.movie_session.cinema_hall.rows):
+        rows = self.movie_session.cinema_hall.rows
+        if not (1 <= self.row <= rows):
             raise ValidationError({
-                "row": [f"row number must be in available range: (1, rows): (1, {self.movie_session.cinema_hall.rows})"]
+                "row": [f"row number must be in available range: "
+                        f"(1, rows): (1, {rows})"]
             })
 
-        # Validate seat
-        if not (1 <= self.seat <= self.movie_session.cinema_hall.seats_in_row):
+        seats = self.movie_session.cinema_hall.seats_in_row
+        if not (1 <= self.seat <= seats):
             raise ValidationError({
-                "seat": [
-                    f"seat number must be in available range: (1, seats_in_row): (1, {self.movie_session.cinema_hall.seats_in_row})"]
+                "seat": [f"seat number must be in available range: "
+                        f"(1, seats_in_row): (1, {seats})"]
             })
 
     def save(self, *args, **kwargs) -> None:
@@ -66,6 +70,8 @@ class Ticket(models.Model):
         return super().save(*args, **kwargs)
 
     def __str__(self) -> str:
-        return (f"{self.movie_session.movie.title} "
-                f"{self.movie_session.show_time.strftime('%Y-%m-%d %H:%M:%S')} "
-                f"(row: {self.row}, seat: {self.seat})")
+        return (
+            f"{self.movie_session.movie.title} "
+            f"{self.movie_session.show_time.strftime('%Y-%m-%d %H:%M:%S')} "
+            f"(row: {self.row}, seat: {self.seat})"
+        )
