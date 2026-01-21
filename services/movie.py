@@ -5,10 +5,7 @@ from db.models import Movie
 
 @transaction.atomic
 def create_movie(movie_title: str, movie_description: str) -> Movie:
-    return Movie.objects.create(
-        title=movie_title,
-        description=movie_description
-    )
+    return Movie.objects.create(title=movie_title, description=movie_description)
 
 
 def get_movies(title: str = None) -> QuerySet:
